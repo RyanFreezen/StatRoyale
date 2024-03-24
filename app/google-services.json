@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "932312241862",
+    "project_id": "fortnite-5bd48",
+    "storage_bucket": "fortnite-5bd48.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932312241862:android:a91c3a08baf6b7ddae29c7",
+        "android_client_info": {
+          "package_name": "com.ryan.fortnite"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3oxe_1OSJXF85z_RcMjRBNGlcGty42uI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
