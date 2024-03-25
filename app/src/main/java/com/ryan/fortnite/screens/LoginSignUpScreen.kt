@@ -1,5 +1,6 @@
 package com.ryan.fortnite.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,13 +26,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.firebase.auth.FirebaseAuth
 import com.ryan.fortnite.FortniteBlue
 import com.ryan.fortnite.FortniteYellow
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun LoginSignUpScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val userEmail = currentUser?.email ?: ""
 
     Box(
         modifier = Modifier
@@ -86,9 +92,30 @@ fun LoginSignUpScreen(navController: NavHostController) {
             // Spacer to add some vertical space
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Sign up button
+            // Login button
             Button(
-                onClick = { /* Implement LOGIN up logic */ },
+                onClick = {
+                    // Implement login logic here
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Login successful, navigate to the desired destination
+                                navController.navigate("home")
+                                Toast.makeText(
+                                    context,
+                                    "Welcome back! It's nice to see you 😁",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                // Login failed, handle the error (e.g., show a toast)
+                                Toast.makeText(
+                                    context,
+                                    "Login failed. Please check your credentials and try again.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                }
             ) {
                 Text(text = "Login", color = Color.White)
             }

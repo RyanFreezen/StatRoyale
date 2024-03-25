@@ -57,38 +57,34 @@ fun SignUpScreen() {
                 if (task.isSuccessful) {
                     // Sign up successful
                     val currentUser = auth.currentUser
-                    // Store user email in Firestore Users collection
+                    // Store user email in Firestore Users collection with email as document ID
                     currentUser?.let { user ->
                         val userData = hashMapOf(
-                            "email" to email,
                             "friendList" to emptyList<String>() // Initialize friendList as empty
                         )
-                        coroutineScope.launch {
-                            // Store user email and friendList in Firestore
-                            firestore.collection("Users").document(user.uid)
-                                .set(userData)
-                                .addOnSuccessListener {
-                                    // Sign up successful
-                                    successMessage = "Sign up successful! Welcome to StatRoyale!"
-                                    // Clear input fields
-                                    email = ""
-                                    password = ""
-                                    // Launch coroutine to clear success message after 10 seconds
-                                    launch {
-                                        delay(10000) // Wait for 10 seconds
-                                        successMessage = null // Clear success message
-                                    }
+                        firestore.collection("Users").document(user.email ?: "")
+                            .set(userData)
+                            .addOnSuccessListener {
+                                // Sign up successful
+                                successMessage = "Sign up successful! Welcome to StatRoyale!"
+                                // Clear input fields
+                                email = ""
+                                password = ""
+                                // Launch coroutine to clear success message after 10 seconds
+                                coroutineScope.launch {
+                                    delay(10000) // Wait for 10 seconds
+                                    successMessage = null // Clear success message
                                 }
-                                .addOnFailureListener { e ->
-                                    // Handle Firestore write failure
-                                    errorMessage = "Error storing user data: ${e.message}"
-                                    // Launch coroutine to clear error message after 10 seconds
-                                    launch {
-                                        delay(10000) // Wait for 10 seconds
-                                        errorMessage = null // Clear error message
-                                    }
+                            }
+                            .addOnFailureListener { e ->
+                                // Handle Firestore write failure
+                                errorMessage = "Error storing user data: ${e.message}"
+                                // Launch coroutine to clear error message after 10 seconds
+                                coroutineScope.launch {
+                                    delay(10000) // Wait for 10 seconds
+                                    errorMessage = null // Clear error message
                                 }
-                        }
+                            }
                     }
                 } else {
                     // Sign up failed

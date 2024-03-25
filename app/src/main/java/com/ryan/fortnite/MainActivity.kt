@@ -61,7 +61,7 @@ fun MainScreen() {
             NavHost(navController, startDestination = "home") {
                 composable("home") { HomeScreen(navController) }
                 composable("challenges") { ChallengeScreen() }
-                composable("friends") { FriendScreen(navController, toString()) }
+                composable("friends") { FriendScreen(navController) }
                 composable("signup/login") { LoginSignUpScreen(navController) }
                 composable("signup") { SignUpScreen() }
                 composable("addfriend") { AddFriendScreen(navController) }

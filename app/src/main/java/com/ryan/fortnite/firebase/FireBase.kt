@@ -1,5 +1,6 @@
 package com.ryan.fortnite.firebase
 
+import com.google.firebase.firestore.PropertyName
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.Flow
@@ -100,15 +101,14 @@ fun addRandomChallenges() {
 
 /******************************************************************************************/
 
-
-
-/******************************************************************************************/
-
 data class Challenge(
     val title: String = "",
     val difficulty: String = ""
 )
 
 data class User(
-    val email: String = "",
+    // Other properties of the user
+    @get:PropertyName("friendList")
+    @set:PropertyName("friendList")
+    var friendList: List<String> = emptyList()
 )

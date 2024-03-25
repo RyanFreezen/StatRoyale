@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +32,7 @@ import com.ryan.fortnite.firebase.User
 fun AddFriendScreen(navController: NavController) {
     // State for search query and search results
     var searchQuery by remember { mutableStateOf("") }
-    var searchResults by remember { mutableStateOf<List<User>>(emptyList()) }
+    var searchResults by remember { mutableStateOf<List<String>>(emptyList()) }
 
     val firestore = FirebaseFirestore.getInstance()
 
@@ -40,13 +41,16 @@ fun AddFriendScreen(navController: NavController) {
         if (query.isNotBlank()) {
             // Perform search only if the query is not blank
             firestore.collection("Users")
-                .whereEqualTo("email", query)
+                .document(query) // Search by document ID (email)
                 .get()
-                .addOnSuccessListener { querySnapshot ->
-                    val results = querySnapshot.documents.mapNotNull { document ->
-                        document.toObject(User::class.java)
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        // User document found
+                        searchResults = listOf(query) // Store the user's email as a String
+                    } else {
+                        // User document not found
+                        searchResults = emptyList()
                     }
-                    searchResults = results
                 }
                 .addOnFailureListener { exception ->
                     // Handle search failure
@@ -58,29 +62,48 @@ fun AddFriendScreen(navController: NavController) {
         }
     }
 
-    // Function to add friend
-    fun addFriend(friendUid: String) {
-        // Get current user's UID
-        val currentUserUid = FirebaseAuth.getInstance().currentUser?.email
-        if (currentUserUid != null) {
-            val currentUserRef = firestore.collection("Users").document(currentUserUid)
-            val friendListRef = currentUserRef.collection("friendList")
-            val friendRef = friendListRef.document(friendUid)
+// Trigger search when searchQuery changes
+    LaunchedEffect(searchQuery) {
+        searchUsers(searchQuery)
+    }
 
-            friendRef.set(mapOf("timestamp" to FieldValue.serverTimestamp()))
-                .addOnSuccessListener {
-                    // Friend added successfully
-                    Log.d("AddFriendScreen", "Friend added successfully")
+    // Function to add friend
+    fun addFriend(email: String) {
+        // Get current user's email
+        val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
+        if (currentUserEmail != null) {
+            val currentUserDocRef = firestore.collection("Users").document(currentUserEmail)
+
+            firestore.runTransaction { transaction ->
+                val currentUserDoc = transaction.get(currentUserDocRef)
+                val friendList = currentUserDoc["friendList"] as? MutableList<String>
+
+                if (friendList != null) {
+                    // Check if the friend's email is not already in the friendList
+                    if (!friendList.contains(email)) {
+                        // Add the friend's email as the friend's document ID
+                        friendList.add(email)
+
+                        // Update the friendList in the current user's document
+                        transaction.update(currentUserDocRef, "friendList", friendList)
+
+                        Log.d("AddFriendScreen", "Friend added successfully: $email")
+                    } else {
+                        Log.d("AddFriendScreen", "Friend already exists in the friend list")
+                    }
+                } else {
+                    Log.e("AddFriendScreen", "FriendList is null")
                 }
-                .addOnFailureListener { exception ->
-                    // Handle friend addition failure
-                    Log.e("AddFriendScreen", "Error adding friend: $exception")
-                }
+            }.addOnSuccessListener {
+                // Transaction successful
+            }.addOnFailureListener { exception ->
+                // Transaction failed
+                Log.e("AddFriendScreen", "Error adding friend: $exception")
+            }
         } else {
             Log.e("AddFriendScreen", "Current user is null")
         }
     }
-
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -94,14 +117,6 @@ fun AddFriendScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Button to trigger search
-        Button(
-            onClick = { searchUsers(searchQuery) },
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
-            Text("Search")
-        }
-
         // Display search results
         LazyColumn(
             modifier = Modifier.fillMaxSize()
@@ -113,9 +128,9 @@ fun AddFriendScreen(navController: NavController) {
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 ) {
-                    Text(user.email) // Display user information here
+                    Text(user) // Display user email here
                     Spacer(modifier = Modifier.weight(1f))
-                    Button(onClick = { addFriend(user.email) }) {
+                    Button(onClick = { addFriend(user) }) { // Pass user email to addFriend function
                         Text("Add Friend")
                     }
                 }
