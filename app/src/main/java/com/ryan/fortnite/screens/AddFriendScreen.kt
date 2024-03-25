@@ -24,9 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.ryan.fortnite.firebase.User
 
 @Composable
 fun AddFriendScreen(navController: NavController) {
@@ -83,7 +81,7 @@ fun AddFriendScreen(navController: NavController) {
                     if (!friendList.contains(email)) {
                         // Add the friend's email as the friend's document ID
                         friendList.add(email)
-
+                        searchQuery = "Friend Added Successfully!"
                         // Update the friendList in the current user's document
                         transaction.update(currentUserDocRef, "friendList", friendList)
 
