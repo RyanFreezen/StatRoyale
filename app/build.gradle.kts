@@ -75,6 +75,4 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation ("com.google.firebase:firebase-firestore-ktx:24.11.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0")
-
-
 }
