@@ -61,7 +61,8 @@ fun FriendScreen(navController: NavController) {
                     // Extract the friendList field from the document
                     val friendList = documentSnapshot.toObject(User::class.java)?.friendList
                     friendList?.let {
-                        friendEmails = it // Update the list of friend emails
+                        // Update the list of friend emails
+                        friendEmails = it
                     }
                 } else {
                     Log.e("FriendScreen", "Current user document does not exist")
@@ -128,7 +129,7 @@ fun FriendScreen(navController: NavController) {
             }
         }
     } else {
-        // User is not logged in, display a message or navigate to the login screen
+        // User is not logged in, display a message.
         Box(
             modifier = Modifier
                 .fillMaxSize()

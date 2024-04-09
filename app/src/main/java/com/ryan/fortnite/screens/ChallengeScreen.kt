@@ -34,8 +34,8 @@ fun ChallengeScreen() {
 
     // Check if the user is logged in
     if (currentUser != null) {
-        // User is logged in, display the challenges
 
+        // User is logged in, display the challenges
         // Create an instance of the FireBase class
         val firebase = FireBase()
 
@@ -45,7 +45,7 @@ fun ChallengeScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(FortniteBlue), // Fortnite blue background
+                .background(FortniteBlue),
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -104,7 +104,7 @@ fun ChallengeScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(FortniteDarkBlue), // Displaying a red background as an example
+                .background(FortniteDarkBlue),
             contentAlignment = Alignment.Center
         ) {
             Text(

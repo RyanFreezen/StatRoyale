@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpScreen() {
+
     // Firebase Authentication instance
     val auth = FirebaseAuth.getInstance()
 
@@ -60,7 +61,8 @@ fun SignUpScreen() {
                     // Store user email in Firestore Users collection with email as document ID
                     currentUser?.let { user ->
                         val userData = hashMapOf(
-                            "friendList" to emptyList<String>() // Initialize friendList as empty
+                            // Initialize friendList as empty
+                            "friendList" to emptyList<String>()
                         )
                         firestore.collection("Users").document(user.email ?: "")
                             .set(userData)
@@ -70,19 +72,19 @@ fun SignUpScreen() {
                                 // Clear input fields
                                 email = ""
                                 password = ""
-                                // Launch coroutine to clear success message after 10 seconds
                                 coroutineScope.launch {
-                                    delay(10000) // Wait for 10 seconds
-                                    successMessage = null // Clear success message
+                                    // Wait for 10 seconds
+                                    delay(10000)
+                                    // Clear success message
+                                    successMessage = null
                                 }
                             }
                             .addOnFailureListener { e ->
                                 // Handle Firestore write failure
                                 errorMessage = "Error storing user data: ${e.message}"
-                                // Launch coroutine to clear error message after 10 seconds
                                 coroutineScope.launch {
-                                    delay(10000) // Wait for 10 seconds
-                                    errorMessage = null // Clear error message
+                                    delay(10000)
+                                    errorMessage = null
                                 }
                             }
                     }
@@ -99,8 +101,8 @@ fun SignUpScreen() {
                     }
                     // Launch coroutine to clear error message after 10 seconds
                     coroutineScope.launch {
-                        delay(10000) // Wait for 10 seconds
-                        errorMessage = null // Clear error message
+                        delay(10000)
+                        errorMessage = null
                     }
                 }
             }

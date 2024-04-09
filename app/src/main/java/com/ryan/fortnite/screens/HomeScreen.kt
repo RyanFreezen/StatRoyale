@@ -40,8 +40,8 @@ fun HomeScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(FortniteBlue), // Fortnite blue background
-        contentAlignment = Alignment.CenterStart // Align content to top-left corner
+            .background(FortniteBlue),
+        contentAlignment = Alignment.CenterStart
     ) {
         Column(
             modifier = Modifier
@@ -104,7 +104,6 @@ fun HomeScreen(navController: NavHostController) {
         }
     }
 
-    // Align the button to the top end (top right) corner
     Box(
         modifier = Modifier
             .fillMaxSize()

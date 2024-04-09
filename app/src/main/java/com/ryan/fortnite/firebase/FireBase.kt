@@ -9,8 +9,10 @@ import kotlinx.coroutines.tasks.await
 
 class FireBase {
 
-    // Function to delete all challenges from the "challenges" collection
     /*
+    // Un-comment when you want to delete Challenges !!!
+
+    // Function to delete all challenges from the "challenges" collection
     fun deleteAllChallenges(challengesCollection: CollectionReference) {
         challengesCollection
             .get()
@@ -24,16 +26,22 @@ class FireBase {
                 Log.w(TAG, "Error deleting challenges", exception)
             }
     }
+
     */
 
+    /******************************************************************************************/
 
     private val db = Firebase.firestore
 
-    // Reference to the "challenges" collection
+    // Reference to the "Challenges" collection database in Firebase Firestore.
     private val challengesCollection = db.collection("Challenges")
 
-    // Function to add a challenge to the "challenges" collection
+    /******************************************************************************************/
+
     /*
+     // Un-comment when you want to add Challenges !!!
+
+    // Function to add a challenge to the "challenges" collection
     fun addChallenge(title: String, difficulty: String) {
         val newChallenge = hashMapOf(
             "title" to title,
@@ -49,7 +57,10 @@ class FireBase {
                 Log.w(TAG, "Error adding challenge", e)
             }
     }
+
     */
+
+    /******************************************************************************************/
 
     // Function to get challenges from the "challenges" collection
     fun getChallenges(): Flow<List<Challenge>> = flow {
@@ -63,8 +74,8 @@ class FireBase {
 // Function to generate random challenges and add them to the database
 fun addRandomChallenges() {
 
-    val firebase = FireBase() // Create an instance of the FireBase class
-
+    // Create an instance of the FireBase class. (Un-comment when you want to delete Challenges)
+    // val firebase = FireBase()
     // firebase.deleteAllChallenges(firebase.challengesCollection)
 
     val titles = listOf(
@@ -95,7 +106,12 @@ fun addRandomChallenges() {
     repeat(10) {
         val randomTitle = titles.random()
         val randomDifficulty = difficulties.random()
-        // firebase.addChallenge(randomTitle, randomDifficulty) // Call addChallenge on the FireBase instance
+
+        /*
+        * Call addChallenge on the FireBase instance
+        * Only un-comment to add challenges once all challenges are first deleted !!!
+        */
+        // firebase.addChallenge(randomTitle, randomDifficulty)
     }
 }
 
@@ -107,8 +123,9 @@ data class Challenge(
 )
 
 data class User(
-    // Other properties of the user
     @get:PropertyName("friendList")
     @set:PropertyName("friendList")
     var friendList: List<String> = emptyList()
 )
+
+/******************************************************************************************/

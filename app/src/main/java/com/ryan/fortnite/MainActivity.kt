@@ -23,7 +23,6 @@ import com.ryan.fortnite.screens.SignUpScreen
 import com.ryan.fortnite.navigation.BottomNavigationBar
 import com.ryan.fortnite.screens.AddFriendScreen
 
-
 /******************************************************************************************/
 
 val FortniteBlue = Color(0xFF0A74DA)

@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun AddFriendScreen(navController: NavController) {
+
     // State for search query and search results
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -44,7 +45,8 @@ fun AddFriendScreen(navController: NavController) {
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
                         // User document found
-                        searchResults = listOf(query) // Store the user's email as a String
+                        // Store the user's email as a String
+                        searchResults = listOf(query)
                     } else {
                         // User document not found
                         searchResults = emptyList()
@@ -60,7 +62,7 @@ fun AddFriendScreen(navController: NavController) {
         }
     }
 
-// Trigger search when searchQuery changes
+    // Trigger search when searchQuery changes
     LaunchedEffect(searchQuery) {
         searchUsers(searchQuery)
     }
@@ -128,7 +130,8 @@ fun AddFriendScreen(navController: NavController) {
                 ) {
                     Text(user) // Display user email here
                     Spacer(modifier = Modifier.weight(1f))
-                    Button(onClick = { addFriend(user) }) { // Pass user email to addFriend function
+                    // Pass user email to addFriend function
+                    Button(onClick = { addFriend(user) }) {
                         Text("Add Friend")
                     }
                 }

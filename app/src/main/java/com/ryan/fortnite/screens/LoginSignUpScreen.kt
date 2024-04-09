@@ -95,7 +95,7 @@ fun LoginSignUpScreen(navController: NavHostController) {
             // Login button
             Button(
                 onClick = {
-                    // Implement login logic here
+                    // login logic
                     FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {

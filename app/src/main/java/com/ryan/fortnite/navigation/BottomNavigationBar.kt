@@ -11,7 +11,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ryan.fortnite.FortniteBrightYellow
-// import com.ryan.fortnite.FortniteYellow
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
