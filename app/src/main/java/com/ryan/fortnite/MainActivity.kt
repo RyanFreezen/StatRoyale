@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +23,8 @@ import com.ryan.fortnite.screens.LoginSignUpScreen
 import com.ryan.fortnite.screens.SignUpScreen
 import com.ryan.fortnite.navigation.BottomNavigationBar
 import com.ryan.fortnite.screens.AddFriendScreen
+import com.ryan.fortnite.screens.FriendRequestScreen
+
 
 /******************************************************************************************/
 
@@ -63,7 +66,8 @@ fun MainScreen() {
                 composable("friends") { FriendScreen(navController) }
                 composable("signup/login") { LoginSignUpScreen(navController) }
                 composable("signup") { SignUpScreen() }
-                composable("addfriend") { AddFriendScreen(navController) }
+                composable("addfriend") { AddFriendScreen() }
+                composable("friend/requests") { FriendRequestScreen(navController) }
             }
         }
     }

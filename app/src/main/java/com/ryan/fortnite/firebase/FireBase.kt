@@ -125,7 +125,8 @@ data class Challenge(
 data class User(
     @get:PropertyName("friendList")
     @set:PropertyName("friendList")
-    var friendList: List<String> = emptyList()
+    var friendList: List<String> = emptyList(),
+    var friendRequests: List<String> = emptyList()
 )
 
 /******************************************************************************************/

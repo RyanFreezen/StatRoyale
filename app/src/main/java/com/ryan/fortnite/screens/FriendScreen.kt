@@ -1,6 +1,6 @@
 package com.ryan.fortnite.screens
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -39,41 +37,35 @@ import com.ryan.fortnite.FortniteBrightYellow
 import com.ryan.fortnite.FortniteDarkBlue
 import com.ryan.fortnite.auth
 import com.ryan.fortnite.firebase.User
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import kotlinx.coroutines.tasks.await
 
+
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun FriendScreen(navController: NavController) {
     val currentUser = auth.currentUser
 
     if (currentUser != null) {
         val currentUserEmail = currentUser.email ?: ""
+        var friendEmails by remember { mutableStateOf<List<String>?>(null) }
+        var expandedDrop by remember { mutableStateOf(false) }
+        var expanded by remember { mutableStateOf(false) }
 
-        // State for holding friend emails
-        var friendEmails by remember { mutableStateOf<List<String>>(emptyList()) }
-
-        // Firebase Firestore instance
         val firestore = FirebaseFirestore.getInstance()
 
         LaunchedEffect(Unit) {
-            // Fetch the document corresponding to the current user's email
             val currentUserDocRef = firestore.collection("Users").document(currentUserEmail)
-            currentUserDocRef.get().addOnSuccessListener { documentSnapshot ->
-                if (documentSnapshot.exists()) {
-                    // Extract the friendList field from the document
-                    val friendList = documentSnapshot.toObject(User::class.java)?.friendList
-                    friendList?.let {
-                        // Update the list of friend emails
-                        friendEmails = it
-                    }
-                } else {
-                    Log.e("FriendScreen", "Current user document does not exist")
-                }
-            }.addOnFailureListener { exception ->
-                // Handle failure to retrieve user document
-                Log.e("FriendScreen", "Error retrieving current user document: $exception")
+            val documentSnapshot = currentUserDocRef.get().await()
+
+            if (documentSnapshot.exists()) {
+                val user = documentSnapshot.toObject(User::class.java)
+                friendEmails = user?.friendList?.sorted()?.reversed()
             }
         }
 
-        // Display friend emails
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -85,44 +77,92 @@ fun FriendScreen(navController: NavController) {
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                // Header Row
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // Your Friends header
                     Text(
-                        text = "Your Friends    ",
+                        text = "Your Friends",
                         style = MaterialTheme.typography.h4.copy(
                             fontWeight = FontWeight.Bold,
                             color = Color.White
-                        )
+                        ),
+                        modifier = Modifier.weight(1f)
                     )
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        // Navigate to add friend screen
-                        onClick = { navController.navigate("addfriend") },
-                        modifier = Modifier.wrapContentWidth()
+
+                    // Hamburger menu
+                    Box(
+                        modifier = Modifier.clickable { expandedDrop = true },
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Text("☰", color = Color.White, fontSize = 24.sp)
+                    }
+                }
+
+                DropdownMenu(
+                    expanded = expandedDrop,
+                    onDismissRequest = { expandedDrop = false }
+                ) {
+                    // Inside the Column composable
+                    DropdownMenuItem(
+                        onClick = {
+                            navController.navigate("addfriend")
+                            expandedDrop = false
+                        }
                     ) {
                         Text(text = "Add Friend")
                     }
+
+                    DropdownMenuItem(
+                        onClick = {
+                            navController.navigate("friend/requests")
+                            expandedDrop = false
+                        }
+                    ) {
+                        Text(text = "Friend Requests")
+                    }
                 }
+
+                // Show More/Show Less button
+                if ((friendEmails?.size ?: 0) > 5) {
+                    Button(
+                        onClick = { expanded = !expanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = if (expanded) "Show Less" else "Show More",
+                            style = MaterialTheme.typography.body1,
+                            color = Color.White
+                        )
+                    }
+                }
+                // Friends list
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(top = 16.dp)
                 ) {
-                    items(friendEmails) { friendEmail ->
-                        // Display each friend email
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
-                            color = FortniteDarkBlue,
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(
-                                text = friendEmail,
-                                style = MaterialTheme.typography.body1,
-                                modifier = Modifier.padding(8.dp),
-                                textAlign = TextAlign.Center,
-                                color = Color.White
-                            )
+                    friendEmails?.take(if (expanded) friendEmails!!.size else 3)?.forEach { friendEmail ->
+                        item {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp, horizontal = 16.dp),
+                                color = FortniteDarkBlue,
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    text = friendEmail,
+                                    style = MaterialTheme.typography.body1,
+                                    modifier = Modifier.padding(8.dp),
+                                    textAlign = TextAlign.Center,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }

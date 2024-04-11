@@ -22,12 +22,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun AddFriendScreen(navController: NavController) {
+fun AddFriendScreen() {
 
     // State for search query and search results
     var searchQuery by remember { mutableStateOf("") }
@@ -40,7 +40,8 @@ fun AddFriendScreen(navController: NavController) {
         if (query.isNotBlank()) {
             // Perform search only if the query is not blank
             firestore.collection("Users")
-                .document(query) // Search by document ID (email)
+                // Search by document ID (email)
+                .document(query)
                 .get()
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
@@ -67,43 +68,30 @@ fun AddFriendScreen(navController: NavController) {
         searchUsers(searchQuery)
     }
 
-    // Function to add friend
+    /******************************************************************************************/
+
+    // Function to send friend request
     fun addFriend(email: String) {
         // Get current user's email
         val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
         if (currentUserEmail != null) {
-            val currentUserDocRef = firestore.collection("Users").document(currentUserEmail)
-
-            firestore.runTransaction { transaction ->
-                val currentUserDoc = transaction.get(currentUserDocRef)
-                val friendList = currentUserDoc["friendList"] as? MutableList<String>
-
-                if (friendList != null) {
-                    // Check if the friend's email is not already in the friendList
-                    if (!friendList.contains(email)) {
-                        // Add the friend's email as the friend's document ID
-                        friendList.add(email)
-                        searchQuery = "Friend Added Successfully!"
-                        // Update the friendList in the current user's document
-                        transaction.update(currentUserDocRef, "friendList", friendList)
-
-                        Log.d("AddFriendScreen", "Friend added successfully: $email")
-                    } else {
-                        Log.d("AddFriendScreen", "Friend already exists in the friend list")
-                    }
-                } else {
-                    Log.e("AddFriendScreen", "FriendList is null")
+            // Add friend request to the recipient's friendRequests collection
+            val recipientDocRef = firestore.collection("Users").document(email)
+            recipientDocRef.update("friendRequests", FieldValue.arrayUnion(currentUserEmail))
+                .addOnSuccessListener {
+                    searchQuery = ""
+                    // Friend request sent successfully
+                    Log.d("AddFriendScreen", "Friend request sent to $email")
                 }
-            }.addOnSuccessListener {
-                // Transaction successful
-            }.addOnFailureListener { exception ->
-                // Transaction failed
-                Log.e("AddFriendScreen", "Error adding friend: $exception")
-            }
+                .addOnFailureListener { exception ->
+                    // Handle failure to send friend request
+                    Log.e("AddFriendScreen", "Error sending friend request to $email: $exception")
+                }
         } else {
             Log.e("AddFriendScreen", "Current user is null")
         }
     }
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -116,23 +104,23 @@ fun AddFriendScreen(navController: NavController) {
             label = { Text("Search for users") },
             modifier = Modifier.fillMaxWidth()
         )
-
         // Display search results
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            itemsIndexed(searchResults) { index, user ->
+            itemsIndexed(searchResults) { _, user ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 ) {
-                    Text(user) // Display user email here
+                    // Display user email here
+                    Text(user)
                     Spacer(modifier = Modifier.weight(1f))
                     // Pass user email to addFriend function
                     Button(onClick = { addFriend(user) }) {
-                        Text("Add Friend")
+                        Text("Send Friend Request")
                     }
                 }
             }

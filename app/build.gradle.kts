@@ -69,10 +69,11 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation ("androidx.compose.material:material:1.6.4")
-    implementation ("androidx.compose.material:material-icons-extended:1.6.4")
+    implementation ("androidx.compose.material:material:1.6.5")
+    implementation ("androidx.compose.material:material-icons-extended:1.6.5")
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation ("com.google.firebase:firebase-firestore-ktx:24.11.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0")
+    implementation ("com.google.accompanist:accompanist-navigation-animation:0.35.0-alpha")
 }
