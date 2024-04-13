@@ -34,7 +34,7 @@ import com.ryan.fortnite.FortniteBlue
 import com.ryan.fortnite.FortniteBrightYellow
 import com.ryan.fortnite.FortniteDarkBlue
 import com.ryan.fortnite.auth
-import com.ryan.fortnite.firebase.User
+import com.ryan.fortnite.data.User
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable

@@ -36,7 +36,7 @@ import com.ryan.fortnite.FortniteBlue
 import com.ryan.fortnite.FortniteBrightYellow
 import com.ryan.fortnite.FortniteDarkBlue
 import com.ryan.fortnite.auth
-import com.ryan.fortnite.firebase.User
+import com.ryan.fortnite.data.User
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -119,7 +119,7 @@ fun FriendScreen(navController: NavController) {
 
                     DropdownMenuItem(
                         onClick = {
-                            navController.navigate("friend/requests")
+                            navController.navigate("friend-requests")
                             expandedDrop = false
                         }
                     ) {

@@ -1,14 +1,15 @@
 package com.ryan.fortnite.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -24,24 +25,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.ryan.fortnite.FortniteBlue
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
     var gamerTag by remember { mutableStateOf("") }
-    var platform by remember { mutableStateOf("") }
-
-    // Retrieve current user's email
     val currentUser = FirebaseAuth.getInstance().currentUser
     val userEmail = currentUser?.email ?: ""
 
+    HomeScreenContent(navController, gamerTag, currentUser, userEmail) { tag ->
+        gamerTag = tag
+    }
+}
+
+@Composable
+fun HomeScreenContent(
+    navController: NavHostController,
+    gamerTag: String,
+    currentUser: FirebaseUser?,
+    userEmail: String,
+    onFieldChange: (String) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(FortniteBlue),
-        contentAlignment = Alignment.CenterStart
+            .background(FortniteBlue)
     ) {
         Column(
             modifier = Modifier
@@ -49,104 +63,118 @@ fun HomeScreen(navController: NavHostController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "StatRoyale",
-                style = MaterialTheme.typography.h4.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Enter Your Fortnite Gamer Tag & Platform",
-                style = MaterialTheme.typography.h6.copy(color = Color.White)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            // Gamer Tag text field
-            TextField(
-                value = gamerTag,
-                onValueChange = { gamerTag = it },
-                label = { Text("Gamer Tag", color = Color.White) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                colors = TextFieldDefaults.textFieldColors(
-                    textColor = Color.White,
-                    cursorColor = Color.White,
-                    focusedIndicatorColor = Color.White,
-                    unfocusedIndicatorColor = Color.White.copy(alpha = 0.5f),
-                    backgroundColor = Color.Transparent
-                )
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            // Platform text field
-            TextField(
-                value = platform,
-                onValueChange = { platform = it },
-                label = { Text("Platform (Xbox, Playstation, PC)", color = Color.White) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                colors = TextFieldDefaults.textFieldColors(
-                    textColor = Color.White,
-                    cursorColor = Color.White,
-                    focusedIndicatorColor = Color.White,
-                    unfocusedIndicatorColor = Color.White.copy(alpha = 0.5f),
-                    backgroundColor = Color.Transparent
-                )
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            // Go button to fetch stats
-            Button(
-                onClick = { },
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(text = "Go")
-            }
+            Spacer(modifier = Modifier.weight(2f))
+            WelcomeText()
+            Spacer(Modifier.height(16.dp))
+            InputFields(gamerTag, onFieldChange)
+            Spacer(Modifier.height(16.dp))
+            ActionButton(navController, gamerTag)
+            Spacer(modifier = Modifier.weight(2f))
+        }
+        UserAuthenticationArea(navController, currentUser)
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        ) {
         }
     }
+}
 
-    Box(
+/******************************************************************************************/
+
+@Composable
+fun WelcomeText() {
+    Text("Stat Royale", style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold, color = Color.White))
+    Spacer(Modifier.height(16.dp))
+    Text("Enter Your Fortnite Gamer Tag", style = MaterialTheme.typography.h6.copy(color = Color.White))
+}
+
+/******************************************************************************************/
+
+@Composable
+fun LogoutButton(onLogout: () -> Unit) {
+    Button(
+        onClick = onLogout,
         modifier = Modifier
-            .fillMaxSize()
-            .padding(3.dp),
-        contentAlignment = Alignment.TopEnd
-    ){
-        // Conditional visibility of Logout button based on user authentication
+    ) {
+        Text(text = "Logout")
+    }
+}
+
+@Composable
+fun LoginSignupButton(onNavigate: () -> Unit) {
+    Button(
+        onClick = onNavigate,
+        modifier = Modifier
+    ) {
+        Text(text = "Sign Up / Login")
+    }
+}
+
+/******************************************************************************************/
+
+@Composable
+fun GamerTagField(gamerTag: String, onGamerTagChange: (String) -> Unit) {
+    TextField(
+        value = gamerTag,
+        onValueChange = onGamerTagChange,
+        label = { Text("Gamer Tag", color = Color.White) },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = Color.White,
+            cursorColor = Color.White,
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.White.copy(alpha = 0.5f),
+            backgroundColor = Color.Transparent
+        )
+    )
+}
+
+@Composable
+fun InputFields(gamerTag: String, onFieldChange: (String) -> Unit) {
+    GamerTagField(gamerTag) { newGamerTag ->
+        onFieldChange(newGamerTag)
+    }
+}
+
+@Composable
+fun ActionButton(navController: NavController, gamerTag: String) {
+    Button(
+        enabled = gamerTag.isNotBlank(),
+        onClick = { navController.navigate("stats-screen/${URLEncoder.encode(gamerTag, StandardCharsets.UTF_8.toString())}") }
+    ) {
+        Text("Go")
+    }
+}
+
+/******************************************************************************************/
+
+@Composable
+fun UserAuthenticationArea(navController: NavController, currentUser: FirebaseUser?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         if (currentUser != null) {
-            // Logout Button
-            Button(
-                onClick = {
-                    FirebaseAuth.getInstance().signOut()
-                    // Redirect to login/signup screen after logout
-                    navController.navigate("signup/login")
-                },
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(text = "Logout")
+            Text(
+                text = currentUser.email ?: "No Email",
+                style = MaterialTheme.typography.body1.copy(color = Color.White),
+                modifier = Modifier.weight(1f)
+            )
+            LogoutButton {
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate("signup-login")
             }
         } else {
-            // Login/Signup Button
-            Button(
-                // Navigate to signup screen
-                onClick = { navController.navigate("signup/login") },
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(text = "Sign Up / Login")
+            Spacer(Modifier.weight(1f))
+            LoginSignupButton {
+                navController.navigate("signup-login")
             }
-        }
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        contentAlignment = Alignment.TopStart
-    ){
-        // Display user's email if logged in
-        if (currentUser != null) {
-            Text(
-                text = userEmail,
-                style = MaterialTheme.typography.body1,
-                color = Color.White
-            )
         }
     }
 }
