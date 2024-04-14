@@ -27,7 +27,14 @@ fun fetchStats(gamerTag: String, onSuccess: (StatsData) -> Unit, onError: (Strin
                     }
                 } ?: onError("No data available")
             } else {
-                onError("API error: ${response.code()} - ${response.message()}")
+                val errorMessage = when (response.code()) {
+                    404 -> "Account does not exist or has no stats."
+                    403 -> "Account stats are private."
+                    else -> "API error: ${response.code()} - ${response.message()}"
+                }
+                withContext(Dispatchers.Main) {
+                    onError(errorMessage)
+                }
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {

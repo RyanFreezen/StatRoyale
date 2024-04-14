@@ -39,6 +39,8 @@ fun LoginSignUpScreen(navController: NavHostController) {
     val currentUser = FirebaseAuth.getInstance().currentUser
     val userEmail = currentUser?.email ?: ""
 
+    /******************************************************************************************/
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -52,6 +54,7 @@ fun LoginSignUpScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Spacer(modifier = Modifier.height(250.dp))
             // Email input field
             OutlinedTextField(
                 value = email,
@@ -68,10 +71,7 @@ fun LoginSignUpScreen(navController: NavHostController) {
                     backgroundColor = Color.Transparent
                 )
             )
-
-            // Spacer to add some vertical space
             Spacer(modifier = Modifier.height(16.dp))
-
             // Password input field
             OutlinedTextField(
                 value = password,
@@ -88,14 +88,11 @@ fun LoginSignUpScreen(navController: NavHostController) {
                     backgroundColor = Color.Transparent
                 )
             )
-
-            // Spacer to add some vertical space
             Spacer(modifier = Modifier.height(16.dp))
-
             // Login button
             Button(
                 onClick = {
-                    // login logic
+                    // Login logic
                     FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
@@ -119,23 +116,19 @@ fun LoginSignUpScreen(navController: NavHostController) {
             ) {
                 Text(text = "Login", color = Color.White)
             }
-
-            // Spacer to add some vertical space
-            Spacer(modifier = Modifier.height(50.dp))
-
-            // Text prompting to sign up
+            Spacer(modifier = Modifier.height(100.dp))
             Text(
                 modifier = Modifier.padding(vertical = 16.dp),
                 text = "Sign up if you don't have an account!",
                 style = MaterialTheme.typography.h6.copy(color = Color.White)
             )
-
             // Sign up button
             Button(
                 onClick = { navController.navigate("signup") },
             ) {
                 Text(text = "Sign up", color = Color.White)
             }
+            Spacer(modifier = Modifier.height(0.dp))
         }
     }
 }

@@ -122,7 +122,6 @@ fun SignUpScreen() {
         ) {
             // Spacer to add vertical space
             Spacer(modifier = Modifier.height(16.dp))
-
             // Email input field
             OutlinedTextField(
                 value = email,
@@ -139,10 +138,8 @@ fun SignUpScreen() {
                     backgroundColor = Color.Transparent
                 )
             )
-
             // Spacer to add vertical space
             Spacer(modifier = Modifier.height(16.dp))
-
             // Password input field
             OutlinedTextField(
                 value = password,
@@ -159,7 +156,6 @@ fun SignUpScreen() {
                     backgroundColor = Color.Transparent
                 )
             )
-
             // Spacer to add vertical space
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -170,7 +166,6 @@ fun SignUpScreen() {
             ) {
                 Text(text = "Sign Up", color = Color.White)
             }
-
             // Success message
             successMessage?.let { message ->
                 Text(
@@ -180,7 +175,6 @@ fun SignUpScreen() {
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
-
             // Error message
             errorMessage?.let { message ->
                 Text(
