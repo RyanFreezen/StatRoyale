@@ -131,19 +131,6 @@ fun FriendScreen(navController: NavController) {
                         }
                     }
                 }
-                // Show More/Show Less button
-                if ((friendEmails?.size ?: 0) > 5) {
-                    Button(
-                        onClick = { expanded = !expanded },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = if (expanded) "Show Less" else "Show More",
-                            style = MaterialTheme.typography.body1,
-                            color = Color.White
-                        )
-                    }
-                }
                 // Friends list
                 LazyColumn(
                     modifier = Modifier
@@ -168,6 +155,22 @@ fun FriendScreen(navController: NavController) {
                                 )
                             }
                         }
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Show More/Show Less button
+                if ((friendEmails?.size ?: 0) > 5) {
+                    Button(
+                        onClick = { expanded = !expanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = if (expanded) "Show Less" else "Show More",
+                            style = MaterialTheme.typography.body1,
+                            color = Color.White
+                        )
                     }
                 }
             }
