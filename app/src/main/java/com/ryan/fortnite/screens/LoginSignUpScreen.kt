@@ -96,7 +96,7 @@ fun LoginSignUpScreen(navController: NavHostController) {
                     FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                // Login successful, navigate to the desired destination
+                                // Login successful
                                 navController.navigate("home")
                                 Toast.makeText(
                                     context,
@@ -104,7 +104,7 @@ fun LoginSignUpScreen(navController: NavHostController) {
                                     Toast.LENGTH_LONG
                                 ).show()
                             } else {
-                                // Login failed, handle the error (e.g., show a toast)
+                                // Login failed
                                 Toast.makeText(
                                     context,
                                     "Login failed. Please check your credentials and try again.",

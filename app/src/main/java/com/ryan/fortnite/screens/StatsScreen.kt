@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -67,34 +68,78 @@ fun StatsScreen(gamerTag: String) {
 
 @Composable
 fun DisplayStats(stats: StatsData) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        item {
+            Text(
+                text = "${stats.account.name}'s Stats",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+        item {
+            StatSection("Performance", listOf(
+                StatItemData("Score", stats.stats.all.overall.score.toString()),
+                StatItemData("Score per Minute", stats.stats.all.overall.scorePerMin.toString()),
+                StatItemData("Score per Match", stats.stats.all.overall.scorePerMatch.toString())
+            ))
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+        item {
+            StatSection("Combat", listOf(
+                StatItemData("Wins", stats.stats.all.overall.wins.toString()),
+                StatItemData("Top 3", stats.stats.all.overall.top3?.toString() ?: "N/A"),
+                StatItemData("Kills", stats.stats.all.overall.kills.toString()),
+                StatItemData("Kills per Match", stats.stats.all.overall.killsPerMatch.toString()),
+                StatItemData("Deaths", stats.stats.all.overall.deaths.toString()),
+                StatItemData("Kill/Death Ratio", stats.stats.all.overall.kd.toString())
+            ))
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+        item {
+            StatSection("Match Insights", listOf(
+                StatItemData("Matches Played", stats.stats.all.overall.matches.toString()),
+                StatItemData("Minutes Played", stats.stats.all.overall.minutesPlayed.toString()),
+                StatItemData("Players Outlived", stats.stats.all.overall.playersOutlived.toString()),
+                StatItemData("Win Rate", "${stats.stats.all.overall.winRate}%")
+            ))
+        }
+    }
+}
+
+/******************************************************************************************/
+
+@Composable
+fun StatSection(title: String, items: List<StatItemData>) {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "${stats.account.name}'s Stats",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                textAlign = TextAlign.Center,
-                color = Color.White
+            text = title,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                color = Color.White,
+                fontWeight = FontWeight.ExtraBold,
+                textAlign = TextAlign.Left
             ),
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(10.dp))
-        StatItem(label = "Score:", value = stats.stats.all.overall.score.toString())
-        StatItem(label = "Score per Minute:", value = stats.stats.all.overall.scorePerMin.toString())
-        StatItem(label = "Score per Match:", value = stats.stats.all.overall.scorePerMatch.toString())
-        StatItem(label = "Wins:", value = stats.stats.all.overall.wins.toString())
-        StatItem(label = "Top 3:", value = stats.stats.all.overall.top3?.toString() ?: "N/A")
-        StatItem(label = "Kills:", value = stats.stats.all.overall.kills.toString())
-        StatItem(label = "Kills per Match:", value = stats.stats.all.overall.killsPerMatch.toString())
-        StatItem(label = "Deaths:", value = stats.stats.all.overall.deaths.toString())
-        StatItem(label = "Kill/Death Ratio:", value = stats.stats.all.overall.kd.toString())
-        StatItem(label = "Matches Played:", value = stats.stats.all.overall.matches.toString())
-        StatItem(label = "Win Rate:", value = "${stats.stats.all.overall.winRate}%")
+        items.forEach { item ->
+            StatItem(label = item.label, value = item.value)
+        }
     }
 }
+
+/******************************************************************************************/
+
+data class StatItemData(val label: String, val value: String)
 
 /******************************************************************************************/
 
@@ -103,7 +148,7 @@ fun StatItem(label: String, value: String) {
     val formattedValue = formatNumber(value)
     Card(
         modifier = Modifier
-            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .padding(vertical = 4.dp)
             .fillMaxWidth()
             .border(1.dp, Color.White, RoundedCornerShape(4.dp)),
         elevation = 2.dp,
